@@ -36,6 +36,7 @@ import { Metadata } from 'next';
 const COLORS = ['#8b5cf6', '#22d3ee', '#c084fc', '#f59e0b'];
 
 export default function DashboardPage() {
+  const [period, setPeriod] = React.useState('7D');
   const { data: stats, isLoading, error } = useQuery({
     queryKey: ['dashboard-stats'],
     queryFn: getStats,
@@ -168,7 +169,13 @@ export default function DashboardPage() {
             <h3 className="text-2xl font-bold text-white tracking-tight">Fleet Utilization Trends</h3>
             <div className="flex gap-2">
               {['7D', '30D', '90D'].map(p => (
-                <button key={p} className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${p === '7D' ? 'bg-primary text-white' : 'text-text-dim hover:bg-white/5'}`}>{p}</button>
+                <button 
+                  key={p} 
+                  onClick={() => setPeriod(p)}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${period === p ? 'bg-primary text-white' : 'text-text-dim hover:bg-white/5'}`}
+                >
+                  {p}
+                </button>
               ))}
             </div>
           </div>

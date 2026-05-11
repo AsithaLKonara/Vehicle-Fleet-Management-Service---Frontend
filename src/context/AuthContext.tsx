@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import apiClient from '@/lib/apiClient';
 
 interface User {
   id: string;
@@ -27,30 +28,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
-
-    if (storedToken && storedUser) {
-      setTimeout(() => {
-        setToken(storedToken);
-        setUser(JSON.parse(storedUser));
-        setIsLoading(false);
-      }, 0);
-    } else {
-      setTimeout(() => setIsLoading(false), 0);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!isLoading) {
-      const publicPaths = ['/login', '/'];
-      if (!token && !publicPaths.includes(pathname)) {
-        router.push('/login');
-      }
-    }
-  }, [token, isLoading, pathname, router]);
-
   const login = useCallback((newToken: string, newUser: User) => {
     localStorage.setItem('token', newToken);
     localStorage.setItem('user', JSON.stringify(newUser));
@@ -66,6 +43,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
     router.push('/login');
   }, [router]);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem('token');
+    const storedUser = localStorage.getItem('user');
+
+    if (storedToken && storedUser) {
+      setTimeout(() => {
+        setToken(storedToken);
+        setUser(JSON.parse(storedUser));
+        setIsLoading(false);
+      }, 0);
+    } else {
+      setTimeout(() => setIsLoading(false), 0);
+    }
+
+    // Set up interceptor for 401s
+    const interceptor = (apiClient as any).interceptors.response.use(
+      (response: any) => response,
+      (error: any) => {
+        if (error.response?.status === 401) {
+          logout();
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      (apiClient as any).interceptors.response.eject(interceptor);
+    };
+  }, [logout]);
+
+  useEffect(() => {
+    if (!isLoading) {
+      const publicPaths = ['/login', '/'];
+      if (!token && !publicPaths.includes(pathname)) {
+        router.push('/login');
+      }
+    }
+  }, [token, isLoading, pathname, router]);
 
   const value = useMemo(() => ({ 
     user, 

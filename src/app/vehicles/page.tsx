@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 import EditVehicleModal from '@/components/EditVehicleModal';
 import MaintenanceModal from '@/components/MaintenanceModal';
+import apiClient from '@/lib/apiClient';
 
 export default function VehiclesPage() {
   const { user } = useAuth();
@@ -25,6 +26,23 @@ export default function VehiclesPage() {
     queryFn: () => getVehicles({ search, status: status || undefined }),
   });
 
+  const handleExport = async () => {
+    try {
+      const response = await apiClient.get('/reports/vehicles/export', {
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `vehicles-report-${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      console.error('Export failed:', err);
+    }
+  };
+
   return (
     <div className="p-4 md:p-12 max-w-7xl mx-auto space-y-12">
       {/* Page Header */}
@@ -37,19 +55,32 @@ export default function VehiclesPage() {
           <h1 className="text-5xl font-bold tracking-tight text-white leading-none">Vehicle <span className="gradient-text">Fleet</span></h1>
           <p className="text-text-dim text-lg">Monitor and manage all company assets in real-time.</p>
         </motion.div>
-        {user?.role !== 'FLEET_STAFF' && (
+        <div className="flex gap-4">
           <motion.button 
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => setIsModalOpen(true)}
-            className="btn-primary"
+            onClick={() => handleExport()}
+            className="btn-secondary"
           >
-            <PlusIcon className="w-5 h-5" />
-            Register Vehicle
+            <AdjustmentsHorizontalIcon className="w-5 h-5" />
+            Export CSV
           </motion.button>
-        )}
+          {user?.role !== 'FLEET_STAFF' && (
+            <motion.button 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setIsModalOpen(true)}
+              className="btn-primary"
+            >
+              <PlusIcon className="w-5 h-5" />
+              Register Vehicle
+            </motion.button>
+          )}
+        </div>
       </div>
 
       {/* Search and Filters */}
