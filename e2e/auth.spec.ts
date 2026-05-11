@@ -14,7 +14,7 @@ test.describe('Authentication Flow', () => {
 
     // Should redirect to dashboard
     await expect(page).toHaveURL('/', { timeout: 10000 });
-    await expect(page.locator('h1')).toContainText('Operational Overview', { timeout: 10000 });
+    await expect(page.getByRole('heading', { name: 'Operational Overview' })).toBeVisible({ timeout: 10000 });
   });
 
   test('should show error for invalid credentials', async ({ page }) => {
