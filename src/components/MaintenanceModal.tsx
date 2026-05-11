@@ -28,7 +28,7 @@ interface MaintenanceModalProps {
 export default function MaintenanceModal({ vehicleId, vehicleName, isOpen, onClose }: MaintenanceModalProps) {
   const queryClient = useQueryClient();
   const { register, handleSubmit, reset, formState: { errors } } = useForm<ServiceFormData>({
-    resolver: zodResolver(serviceSchema),
+    resolver: zodResolver(serviceSchema) as any,
     defaultValues: {
         serviceDate: new Date().toISOString().split('T')[0]
     }
@@ -74,7 +74,7 @@ export default function MaintenanceModal({ vehicleId, vehicleName, isOpen, onClo
               </button>
             </div>
 
-            <form onSubmit={handleSubmit((data) => mutation.mutate(data))} className="space-y-6">
+            <form onSubmit={handleSubmit((data: ServiceFormData) => mutation.mutate(data))} className="space-y-6">
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] ml-1">Service Title</label>
                 <input 
