@@ -6,7 +6,7 @@ import { getAssignments, returnVehicle } from '@/services/assignmentService';
 import AssignmentTable from '@/components/AssignmentTable';
 import CreateAssignmentModal from '@/components/CreateAssignmentModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ClipboardDocumentListIcon, PlusIcon, ArrowPathIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, ArrowPathIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
 export default function AssignmentsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);

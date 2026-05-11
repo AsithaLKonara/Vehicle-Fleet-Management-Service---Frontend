@@ -9,7 +9,8 @@ import {
   CalendarIcon, 
   CheckBadgeIcon,
   ArrowPathRoundedSquareIcon,
-  ClockIcon
+  ClockIcon,
+  ClipboardDocumentListIcon
 } from '@heroicons/react/24/outline';
 
 interface Assignment {
