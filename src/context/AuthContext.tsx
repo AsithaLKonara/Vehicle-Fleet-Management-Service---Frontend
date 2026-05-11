@@ -44,7 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!isLoading) {
-      const publicPaths = ['/login'];
+      const publicPaths = ['/login', '/'];
       if (!token && !publicPaths.includes(pathname)) {
         router.push('/login');
       }
@@ -56,7 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('user', JSON.stringify(newUser));
     setToken(newToken);
     setUser(newUser);
-    router.push('/');
+    router.push('/dashboard');
   }, [router]);
 
   const logout = useCallback(() => {

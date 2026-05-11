@@ -13,7 +13,7 @@ test.describe('Authentication Flow', () => {
     await page.click('button[type="submit"]');
 
     // Should redirect to dashboard
-    await expect(page).toHaveURL('/', { timeout: 10000 });
+    await expect(page).toHaveURL('/dashboard', { timeout: 10000 });
     await expect(page.getByRole('heading', { name: 'Operational Overview' })).toBeVisible({ timeout: 10000 });
   });
 

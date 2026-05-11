@@ -7,7 +7,8 @@ import {
   EnvelopeIcon, 
   ShieldCheckIcon,
   TagIcon,
-  EllipsisHorizontalIcon
+  EllipsisHorizontalIcon,
+  UsersIcon
 } from '@heroicons/react/24/outline';
 
 interface User {

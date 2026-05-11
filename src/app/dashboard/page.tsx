@@ -22,8 +22,14 @@ import {
   ClipboardDocumentCheckIcon, 
   ChartBarIcon,
   ArrowUpIcon,
-  BoltIcon
+  BoltIcon,
+  ExclamationCircleIcon
 } from '@heroicons/react/24/outline';
+import { Metadata } from 'next';
+
+// This is a client component, metadata cannot be exported here.
+// I will keep it in mind for layout or separate page file if needed.
+// For now I'll add an internal title via useEffect if needed or just focus on the UI.
 
 const COLORS = ['#8b5cf6', '#22d3ee', '#c084fc', '#f59e0b'];
 
@@ -205,15 +211,22 @@ export default function DashboardPage() {
             </div>
           </div>
           <div className="space-y-4">
-            {stats?.statusDistribution.map((item, idx) => (
-              <div key={item.status} className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }}></div>
-                  <span className="text-sm font-medium text-text-dim">{item.status}</span>
+            {stats?.statusDistribution && stats.statusDistribution.length > 0 ? (
+              stats.statusDistribution.map((item, idx) => (
+                <div key={item.status} className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }}></div>
+                    <span className="text-sm font-medium text-text-dim">{item.status}</span>
+                  </div>
+                  <span className="text-sm font-bold text-white">{item.count}</span>
                 </div>
-                <span className="text-sm font-bold text-white">{item.count}</span>
+              ))
+            ) : (
+              <div className="flex flex-col items-center justify-center py-4 space-y-2 opacity-50">
+                <ExclamationCircleIcon className="w-8 h-8 text-text-muted" />
+                <p className="text-xs font-bold uppercase tracking-widest text-text-muted">No data available</p>
               </div>
-            ))}
+            )}
           </div>
         </motion.div>
       </div>
