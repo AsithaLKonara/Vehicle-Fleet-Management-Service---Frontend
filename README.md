@@ -16,6 +16,12 @@ Modern, high-performance dashboard for the Vehicle Fleet Management System.
 - **Module Based**: Dedicated views for Users, Vehicles, and Assignments.
 - **Authenticated Flow**: Secure login with persistent session management.
 
+## Demo Credentials
+To explore the application with different role permissions, use the following accounts:
+- **Admin**: `admin@fleet.com` / `admin123` (Full Access)
+- **Fleet Manager**: `manager@fleet.com` / `manager123` (Manage Vehicles & Assignments)
+- **Fleet Staff**: `staff@fleet.com` / `staff123` (View Only)
+
 ## Getting Started
 
 ### Installation
