@@ -1,10 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getAssignments, returnVehicle } from '@/services/assignmentService';
 import AssignmentTable from '@/components/AssignmentTable';
+import CreateAssignmentModal from '@/components/CreateAssignmentModal';
 
 export default function AssignmentsPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: assignments, isLoading, error } = useQuery({
@@ -33,7 +36,10 @@ export default function AssignmentsPage() {
           <h1 className="text-4xl font-bold tracking-tight text-white">Assignments</h1>
           <p className="text-text-dim mt-2">Manage vehicle distributions and track usage history.</p>
         </div>
-        <button className="btn-primary">
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="btn-primary"
+        >
           New Assignment
         </button>
       </div>
@@ -52,6 +58,11 @@ export default function AssignmentsPage() {
           onReturn={handleReturn}
         />
       )}
+
+      <CreateAssignmentModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
     </div>
   );
 }
