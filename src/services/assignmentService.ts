@@ -4,8 +4,9 @@ export interface Assignment {
   id: string;
   vehicleId: string;
   driverId: string;
+  assignedById: string;
   assignedAt: string;
-  returnedAt?: string;
+  returnedAt: string | null;
   vehicle: {
     plateNumber: string;
     make: string;
@@ -14,6 +15,9 @@ export interface Assignment {
   driver: {
     name: string;
     email: string;
+  };
+  assignedBy: {
+    name: string;
   };
 }
 

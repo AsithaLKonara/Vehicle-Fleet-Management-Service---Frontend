@@ -12,27 +12,8 @@ import {
   ClockIcon,
   ClipboardDocumentListIcon
 } from '@heroicons/react/24/outline';
+import { Assignment } from '@/services/assignmentService';
 
-interface Assignment {
-  id: string;
-  vehicleId: string;
-  driverId: string;
-  assignedById: string;
-  assignedAt: string;
-  returnedAt: string | null;
-  vehicle: {
-    plateNumber: string;
-    make: string;
-    model: string;
-  };
-  driver: {
-    name: string;
-    email: string;
-  };
-  assignedBy: {
-    name: string;
-  };
-}
 
 interface AssignmentTableProps {
   assignments: Assignment[];
