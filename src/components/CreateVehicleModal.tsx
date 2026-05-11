@@ -13,6 +13,8 @@ const vehicleSchema = z.object({
   plateNumber: z.string().min(3, 'A unique plate number is required for asset identification'),
   make: z.string().min(2, 'Manufacturer identity is required'),
   model: z.string().min(1, 'Model classification is required'),
+  year: z.preprocess((val) => Number(val), z.number().min(1900).max(new Date().getFullYear() + 1)),
+  purchaseCost: z.preprocess((val) => Number(val), z.number().min(0, 'Purchase cost must be non-negative')),
   type: z.string().min(1, 'Vehicle type classification is required'),
   imageUrl: z.string().url('Invalid image endpoint URL').optional().or(z.literal('')),
 });
@@ -40,7 +42,10 @@ export default function CreateVehicleModal({ isOpen, onClose }: CreateVehicleMod
   });
 
   const onSubmit = (data: VehicleFormData) => {
-    mutation.mutate(data);
+    mutation.mutate({
+      ...data,
+      status: 'AVAILABLE',
+    });
   };
 
   return (
@@ -103,6 +108,30 @@ export default function CreateVehicleModal({ isOpen, onClose }: CreateVehicleMod
                     placeholder="Hiace"
                   />
                   {errors.model && <p className="text-red-400 text-xs font-bold mt-1 ml-1">{errors.model.message}</p>}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] ml-1">Manufacturing Year</label>
+                  <input 
+                    {...register('year')}
+                    type="number"
+                    className="input-field w-full" 
+                    placeholder="2024"
+                  />
+                  {errors.year && <p className="text-red-400 text-xs font-bold mt-1 ml-1">{errors.year.message}</p>}
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] ml-1">Purchase Cost (USD)</label>
+                  <input 
+                    {...register('purchaseCost')}
+                    type="number"
+                    step="0.01"
+                    className="input-field w-full" 
+                    placeholder="25000.00"
+                  />
+                  {errors.purchaseCost && <p className="text-red-400 text-xs font-bold mt-1 ml-1">{errors.purchaseCost.message}</p>}
                 </div>
               </div>
 

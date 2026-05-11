@@ -10,6 +10,8 @@ interface Vehicle {
   plateNumber: string;
   make: string;
   model: string;
+  year: number;
+  purchaseCost: number;
   status: 'AVAILABLE' | 'ASSIGNED' | 'MAINTENANCE' | 'INACTIVE';
   type?: string;
   imageUrl?: string;
@@ -72,7 +74,10 @@ export default function VehicleTable({ vehicles }: VehicleTableProps) {
           <div className="p-6 space-y-4">
             <div className="flex justify-between items-start">
               <div>
-                <h3 className="text-xl font-bold text-white tracking-tight">{vehicle.make} {vehicle.model}</h3>
+                <h3 className="text-xl font-bold text-white tracking-tight">
+                  {vehicle.make} {vehicle.model}
+                  <span className="text-text-muted font-medium ml-2 text-sm">({vehicle.year})</span>
+                </h3>
                 <div className="flex items-center gap-1.5 mt-1 text-text-dim">
                   <IdentificationIcon className="w-4 h-4" />
                   <span className="text-sm font-mono tracking-wider">{vehicle.plateNumber}</span>

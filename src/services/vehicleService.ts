@@ -6,9 +6,11 @@ export interface Vehicle {
   make: string;
   model: string;
   year: number;
-  status: 'AVAILABLE' | 'ASSIGNED' | 'MAINTENANCE';
+  purchaseCost: number;
+  status: 'AVAILABLE' | 'ASSIGNED' | 'MAINTENANCE' | 'INACTIVE';
   type?: string;
   mileage?: number;
+  imageUrl?: string;
 }
 
 export const getVehicles = async (params?: { status?: string; type?: string; search?: string }): Promise<Vehicle[]> => {
