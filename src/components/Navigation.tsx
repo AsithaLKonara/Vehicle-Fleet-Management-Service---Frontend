@@ -22,6 +22,7 @@ export default function Navigation() {
     { name: 'Vehicles', href: '/vehicles', icon: TruckIcon },
     { name: 'Users', href: '/users', icon: UsersIcon, roles: ['ADMIN'] },
     { name: 'Assignments', href: '/assignments', icon: ClipboardDocumentIcon },
+    { name: 'Audit Logs', href: '/audit', icon: ClipboardDocumentIcon, roles: ['ADMIN'] },
   ];
 
   const filteredItems = navItems.filter(item => 
