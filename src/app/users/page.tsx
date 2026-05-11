@@ -1,10 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getUsers } from '@/services/userService';
 import UserTable from '@/components/UserTable';
+import CreateUserModal from '@/components/CreateUserModal';
 
 export default function UsersPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { data: users, isLoading, error } = useQuery({
     queryKey: ['users'],
     queryFn: getUsers,
@@ -17,7 +20,10 @@ export default function UsersPage() {
           <h1 className="text-4xl font-bold tracking-tight text-white">User Management</h1>
           <p className="text-text-dim mt-2">Manage system administrators, managers, and staff members.</p>
         </div>
-        <button className="btn-primary">
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="btn-primary"
+        >
           Add New User
         </button>
       </div>
@@ -33,6 +39,11 @@ export default function UsersPage() {
       ) : (
         <UserTable users={users || []} />
       )}
+
+      <CreateUserModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
     </div>
   );
 }
