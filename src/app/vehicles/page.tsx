@@ -1,12 +1,14 @@
 'use client';
 
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getVehicles } from '@/services/vehicleService';
 import VehicleTable from '@/components/VehicleTable';
-import { useState } from 'react';
+import CreateVehicleModal from '@/components/CreateVehicleModal';
 
 export default function VehiclesPage() {
   const [search, setSearch] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   const { data: vehicles, isLoading, error } = useQuery({
     queryKey: ['vehicles', search],
@@ -20,7 +22,10 @@ export default function VehiclesPage() {
           <h1 className="text-4xl font-bold tracking-tight text-white">Vehicle Fleet</h1>
           <p className="text-text-dim mt-2">Monitor and manage all company vehicles in real-time.</p>
         </div>
-        <button className="btn-primary">
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="btn-primary"
+        >
           Register Vehicle
         </button>
       </div>
@@ -46,6 +51,11 @@ export default function VehiclesPage() {
       ) : (
         <VehicleTable vehicles={vehicles || []} />
       )}
+
+      <CreateVehicleModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
     </div>
   );
 }
