@@ -1,10 +1,15 @@
 'use client';
 
+import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { usePathname } from 'next/navigation';
 import Navigation from './Navigation';
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
+  const pathname = usePathname();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const isLandingPage = pathname === '/';
 
   if (isLoading) {
     return (
@@ -14,10 +19,12 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     );
   }
 
+  const showNavigation = user && !isLandingPage;
+
   return (
     <div className="flex min-h-screen w-full">
-      {user && <Navigation />}
-      <main className={`flex-1 transition-all duration-300 ${user ? 'pl-64' : 'pl-0'}`}>
+      {showNavigation && <Navigation isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />}
+      <main className={`flex-1 transition-all duration-500 ${showNavigation ? (isCollapsed ? 'pl-[96px]' : 'pl-[280px]') : 'pl-0'}`}>
         {children}
       </main>
     </div>

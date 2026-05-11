@@ -13,6 +13,7 @@ const vehicleSchema = z.object({
   make: z.string().min(2, 'Make is required'),
   model: z.string().min(1, 'Model is required'),
   type: z.string().min(1, 'Type is required'),
+  imageUrl: z.string().url('Invalid image URL').optional().or(z.literal('')),
 });
 
 type VehicleFormData = z.infer<typeof vehicleSchema>;
@@ -100,6 +101,16 @@ export default function CreateVehicleModal({ isOpen, onClose }: CreateVehicleMod
               <option value="MOTORCYCLE">Motorcycle</option>
             </select>
             {errors.type && <p className="text-red-400 text-xs">{errors.type.message}</p>}
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-sm font-medium text-text-dim">Vehicle Image URL</label>
+            <input 
+              {...register('imageUrl')}
+              className="input-field w-full" 
+              placeholder="https://example.com/image.jpg"
+            />
+            {errors.imageUrl && <p className="text-red-400 text-xs">{errors.imageUrl.message}</p>}
           </div>
 
           {mutation.isError && (
