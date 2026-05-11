@@ -1,0 +1,30 @@
+# Frontend Agent Rules
+
+## Naming Conventions
+- Components: PascalCase (e.g., `UserTable.tsx`)
+- Hooks: camelCase starting with 'use' (e.g., `useVehicles.ts`)
+- Services/Utils: camelCase (e.g., `apiClient.ts`)
+
+## Coding Standards
+- Use TypeScript for all files.
+- Follow KISS (Keep It Simple, Stupid) principle.
+- Use Tailwind CSS for styling.
+- Keep components focused and reusable.
+- Use App Router features (Server Components where possible).
+
+## Git Commit Strategy
+- prefix: `feat:` for new features
+- prefix: `fix:` for bug fixes
+- prefix: `chore:` for setup/dependencies
+- prefix: `docs:` for documentation
+- prefix: `test:` for testing
+- prefix: `ci:` for CI/CD changes
+
+## Testing Strategy
+- Use Playwright for E2E testing.
+- Test files should be in `tests/` directory.
+- Verify complete flows: Auth, RBAC, CRUD, Search.
+
+## Success Criteria
+- Code must pass linting (`npm run lint`).
+- Code must build successfully (`npm run build`).
