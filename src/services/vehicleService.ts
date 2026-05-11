@@ -11,14 +11,35 @@ export interface Vehicle {
   type?: string;
   mileage?: number;
   imageUrl?: string;
+  assignments?: Array<{
+    id: string;
+    driver: {
+      id: string;
+      name: string;
+      email: string;
+    };
+    assignedBy?: {
+      id: string;
+      name: string;
+    };
+    assignedAt: string;
+    returnedAt: string | null;
+  }>;
+  serviceRecords?: Array<{
+    id: string;
+    title: string;
+    description?: string;
+    serviceDate: string;
+    cost: number;
+  }>;
 }
 
-export const getVehicles = async (params?: { status?: string; type?: string; search?: string }): Promise<Vehicle[]> => {
+export const getVehicles = async (params?: { status?: string; type?: string; search?: string; driverName?: string }): Promise<Vehicle[]> => {
   const response = await apiClient.get('/vehicles', { params });
   return response.data.data;
 };
 
-export const createVehicle = async (data: Omit<Vehicle, 'id'>): Promise<Vehicle> => {
+export const createVehicle = async (data: Omit<Vehicle, 'id' | 'assignments' | 'serviceRecords'>): Promise<Vehicle> => {
   const response = await apiClient.post('/vehicles', data);
   return response.data.data;
 };

@@ -3,23 +3,11 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { TruckIcon, MapPinIcon, IdentificationIcon, WrenchScrewdriverIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { TruckIcon, MapPinIcon, IdentificationIcon, WrenchScrewdriverIcon, PencilSquareIcon, TrashIcon, UserIcon } from '@heroicons/react/24/outline';
 import VehicleDetailsModal from './VehicleDetailsModal';
 import { useAuth } from '@/context/AuthContext';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { deleteVehicle } from '@/services/vehicleService';
-
-interface Vehicle {
-  id: string;
-  plateNumber: string;
-  make: string;
-  model: string;
-  year: number;
-  purchaseCost: number;
-  status: 'AVAILABLE' | 'ASSIGNED' | 'MAINTENANCE' | 'INACTIVE';
-  type?: string;
-  imageUrl?: string;
-}
+import { deleteVehicle, Vehicle } from '@/services/vehicleService';
 
 interface VehicleTableProps {
   vehicles: Vehicle[];
@@ -120,6 +108,19 @@ export default function VehicleTable({ vehicles, onEdit, onMaintenance }: Vehicl
                   <MapPinIcon className="w-5 h-5 text-text-dim" />
                 </div>
               </div>
+
+              {/* Assignment Info */}
+              {vehicle.status === 'ASSIGNED' && vehicle.assignments?.[0] && (
+                <div className="p-3 bg-primary/10 rounded-2xl border border-primary/20 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                    <UserIcon className="w-4 h-4 text-primary" />
+                  </div>
+                  <div className="overflow-hidden">
+                    <p className="text-[9px] text-primary font-black uppercase tracking-wider">Currently Assigned To</p>
+                    <p className="text-white text-xs font-bold truncate">{vehicle.assignments[0].driver.name}</p>
+                  </div>
+                </div>
+              )}
 
               <div className="pt-4 border-t border-white/5 grid grid-cols-2 gap-4 mt-auto">
                 <button 

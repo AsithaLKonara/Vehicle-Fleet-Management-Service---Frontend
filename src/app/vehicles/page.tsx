@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getVehicles } from '@/services/vehicleService';
 import VehicleTable from '@/components/VehicleTable';
 import CreateVehicleModal from '@/components/CreateVehicleModal';
-import { MagnifyingGlassIcon, AdjustmentsHorizontalIcon, PlusIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, AdjustmentsHorizontalIcon, PlusIcon, UserIcon } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/context/AuthContext';
 import EditVehicleModal from '@/components/EditVehicleModal';
@@ -16,14 +16,19 @@ export default function VehiclesPage() {
   const { user } = useAuth();
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('');
+  const [driverName, setDriverName] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
   const [maintenanceVehicle, setMaintenanceVehicle] = useState<any>(null);
   
   const { data: vehicles, isLoading, error } = useQuery({
-    queryKey: ['vehicles', search, status],
-    queryFn: () => getVehicles({ search, status: status || undefined }),
+    queryKey: ['vehicles', search, status, driverName],
+    queryFn: () => getVehicles({ 
+      search: search || undefined, 
+      status: status || undefined,
+      driverName: driverName || undefined
+    }),
   });
 
   const handleExport = async () => {
@@ -88,7 +93,7 @@ export default function VehiclesPage() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="flex flex-col md:flex-row gap-4"
+        className="flex flex-col xl:flex-row gap-4"
       >
         <div className="relative flex-1 group">
           <MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted group-focus-within:text-primary transition-colors" />
@@ -100,7 +105,17 @@ export default function VehiclesPage() {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <div className="flex gap-4">
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="relative group min-w-[200px]">
+            <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted group-focus-within:text-primary transition-colors" />
+            <input 
+              type="text" 
+              placeholder="Filter by driver name..." 
+              className="input-field w-full pl-12"
+              value={driverName}
+              onChange={(e) => setDriverName(e.target.value)}
+            />
+          </div>
           <div className="relative group min-w-[180px]">
             <AdjustmentsHorizontalIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted group-focus-within:text-primary transition-colors" />
             <select 

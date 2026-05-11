@@ -11,21 +11,13 @@ import {
   CurrencyDollarIcon,
   WrenchScrewdriverIcon,
   IdentificationIcon,
-  ClockIcon
+  ClockIcon,
+  UserIcon,
+  ShieldCheckIcon
 } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 
-interface Vehicle {
-  id: string;
-  plateNumber: string;
-  make: string;
-  model: string;
-  year: number;
-  purchaseCost: number;
-  status: string;
-  type?: string;
-  imageUrl?: string;
-}
+import { Vehicle } from '@/services/vehicleService';
 
 interface VehicleDetailsModalProps {
   vehicle: Vehicle;
@@ -39,6 +31,8 @@ export default function VehicleDetailsModal({ vehicle, isOpen, onClose }: Vehicl
     queryFn: () => getVehicleServices(vehicle.id),
     enabled: isOpen,
   });
+
+  const activeAssignment = vehicle.assignments?.find(a => !a.returnedAt);
 
   if (!isOpen) return null;
 
@@ -105,6 +99,32 @@ export default function VehicleDetailsModal({ vehicle, isOpen, onClose }: Vehicl
                 </div>
               </section>
 
+              {activeAssignment && (
+                <section className="space-y-4">
+                  <h3 className="text-xs font-black text-text-muted uppercase tracking-[0.2em]">Current Assignment</h3>
+                  <div className="glass p-6 rounded-[2rem] bg-linear-to-br from-primary/10 to-transparent border border-primary/20 space-y-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
+                        <UserIcon className="w-6 h-6 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-text-muted font-bold uppercase">Driver Name</p>
+                        <p className="text-white font-bold">{activeAssignment.driver.name}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 pt-4 border-t border-white/5">
+                      <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
+                        <ShieldCheckIcon className="w-5 h-5 text-text-muted" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-text-muted font-bold uppercase">Assigned By</p>
+                        <p className="text-white text-xs font-medium">{activeAssignment.assignedBy?.name || 'N/A'}</p>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              )}
+
               <section className="glass p-6 rounded-[2rem] bg-linear-to-br from-primary/5 to-transparent border border-primary/10">
                  <h4 className="text-lg font-bold text-white mb-2">Fleet Health Score</h4>
                  <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden mb-4">
@@ -129,7 +149,7 @@ export default function VehicleDetailsModal({ vehicle, isOpen, onClose }: Vehicl
                  </div>
                ) : services && services.length > 0 ? (
                  <div className="space-y-4">
-                    {services.map((record) => (
+                    {services.map((record: any) => (
                       <div key={record.id} className="glass-light p-6 rounded-3xl border border-white/5 hover:border-white/10 transition-all group">
                          <div className="flex justify-between items-start">
                             <div className="space-y-1">
