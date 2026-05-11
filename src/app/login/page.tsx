@@ -67,6 +67,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  data-testid="login-email"
                 />
               </div>
             </div>
@@ -84,6 +85,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  data-testid="login-password"
                 />
               </div>
             </div>
@@ -93,6 +95,7 @@ export default function LoginPage() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center gap-3 text-red-400 text-sm font-medium"
+                data-testid="login-error"
               >
                 <ShieldCheckIcon className="w-5 h-5 flex-shrink-0" />
                 {error}
@@ -103,6 +106,7 @@ export default function LoginPage() {
               type="submit" 
               className="btn-primary w-full py-4 text-lg"
               disabled={loading}
+              data-testid="login-submit"
             >
               {loading ? (
                 <div className="flex items-center gap-2">

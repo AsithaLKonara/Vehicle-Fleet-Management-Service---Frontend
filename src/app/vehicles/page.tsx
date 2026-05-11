@@ -7,11 +7,18 @@ import VehicleTable from '@/components/VehicleTable';
 import CreateVehicleModal from '@/components/CreateVehicleModal';
 import { MagnifyingGlassIcon, AdjustmentsHorizontalIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '@/context/AuthContext';
+import EditVehicleModal from '@/components/EditVehicleModal';
+import MaintenanceModal from '@/components/MaintenanceModal';
 
 export default function VehiclesPage() {
+  const { user } = useAuth();
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedVehicle, setSelectedVehicle] = useState<any>(null);
+  const [maintenanceVehicle, setMaintenanceVehicle] = useState<any>(null);
   
   const { data: vehicles, isLoading, error } = useQuery({
     queryKey: ['vehicles', search, status],
@@ -30,17 +37,19 @@ export default function VehiclesPage() {
           <h1 className="text-5xl font-bold tracking-tight text-white leading-none">Vehicle <span className="gradient-text">Fleet</span></h1>
           <p className="text-text-dim text-lg">Monitor and manage all company assets in real-time.</p>
         </motion.div>
-        <motion.button 
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setIsModalOpen(true)}
-          className="btn-primary"
-        >
-          <PlusIcon className="w-5 h-5" />
-          Register Vehicle
-        </motion.button>
+        {user?.role !== 'FLEET_STAFF' && (
+          <motion.button 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setIsModalOpen(true)}
+            className="btn-primary"
+          >
+            <PlusIcon className="w-5 h-5" />
+            Register Vehicle
+          </motion.button>
+        )}
       </div>
 
       {/* Search and Filters */}
@@ -114,7 +123,31 @@ export default function VehiclesPage() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <VehicleTable vehicles={vehicles || []} />
+            <VehicleTable 
+              vehicles={vehicles || []} 
+              onEdit={(v) => { setSelectedVehicle(v); setIsEditModalOpen(true); }}
+              onMaintenance={(v) => setMaintenanceVehicle(v)}
+            />
+            
+            {maintenanceVehicle && (
+              <MaintenanceModal 
+                vehicleId={maintenanceVehicle.id}
+                vehicleName={`${maintenanceVehicle.make} ${maintenanceVehicle.model}`}
+                isOpen={!!maintenanceVehicle}
+                onClose={() => setMaintenanceVehicle(null)}
+              />
+            )}
+
+            {selectedVehicle && user?.role !== 'FLEET_STAFF' && (
+              <EditVehicleModal 
+                vehicle={selectedVehicle}
+                isOpen={isEditModalOpen}
+                onClose={() => {
+                  setIsEditModalOpen(false);
+                  setSelectedVehicle(null);
+                }}
+              />
+            )}
           </motion.div>
         )}
       </AnimatePresence>

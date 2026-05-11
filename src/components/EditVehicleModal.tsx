@@ -1,11 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createVehicle } from '@/services/vehicleService';
+import { updateVehicle } from '@/services/vehicleService';
 import { XMarkIcon, TruckIcon, IdentificationIcon, PhotoIcon, TagIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -21,31 +21,42 @@ const vehicleSchema = z.object({
 
 type VehicleFormData = z.infer<typeof vehicleSchema>;
 
-interface CreateVehicleModalProps {
+interface EditVehicleModalProps {
+  vehicle: any;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export default function CreateVehicleModal({ isOpen, onClose }: CreateVehicleModalProps) {
+export default function EditVehicleModal({ vehicle, isOpen, onClose }: EditVehicleModalProps) {
   const queryClient = useQueryClient();
   const { register, handleSubmit, reset, formState: { errors } } = useForm<VehicleFormData>({
     resolver: zodResolver(vehicleSchema),
   });
 
+  useEffect(() => {
+    if (vehicle) {
+      reset({
+        plateNumber: vehicle.plateNumber,
+        make: vehicle.make,
+        model: vehicle.model,
+        year: vehicle.year,
+        purchaseCost: vehicle.purchaseCost,
+        type: vehicle.type || '',
+        imageUrl: vehicle.imageUrl || '',
+      });
+    }
+  }, [vehicle, reset]);
+
   const mutation = useMutation({
-    mutationFn: createVehicle,
+    mutationFn: (data: VehicleFormData) => updateVehicle(vehicle.id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['vehicles'] });
-      reset();
       onClose();
     },
   });
 
   const onSubmit = (data: VehicleFormData) => {
-    mutation.mutate({
-      ...data,
-      status: 'AVAILABLE',
-    });
+    mutation.mutate(data);
   };
 
   return (
@@ -68,8 +79,8 @@ export default function CreateVehicleModal({ isOpen, onClose }: CreateVehicleMod
           >
             <div className="flex justify-between items-start">
               <div className="space-y-1">
-                <h2 className="text-3xl font-bold text-white tracking-tight" data-testid="vehicle-modal-title">New <span className="gradient-text">Asset Registry</span></h2>
-                <p className="text-text-dim text-sm font-medium">Add a new high-performance vehicle to the operational fleet.</p>
+                <h2 className="text-3xl font-bold text-white tracking-tight">Modify <span className="gradient-text">Asset Metadata</span></h2>
+                <p className="text-text-dim text-sm font-medium">Update high-performance specifications in the fleet matrix.</p>
               </div>
               <button onClick={onClose} className="p-2 rounded-xl hover:bg-white/5 text-text-dim hover:text-white transition-colors">
                 <XMarkIcon className="w-6 h-6" />
@@ -85,10 +96,9 @@ export default function CreateVehicleModal({ isOpen, onClose }: CreateVehicleMod
                     {...register('plateNumber')}
                     className="input-field w-full pl-12 uppercase tracking-widest font-mono" 
                     placeholder="e.g. ABC-1234"
-                    data-testid="vehicle-plate"
                   />
                 </div>
-                {errors.plateNumber && <p className="text-red-400 text-xs font-bold mt-1 ml-1" data-testid="vehicle-plate-error">{errors.plateNumber.message}</p>}
+                {errors.plateNumber && <p className="text-red-400 text-xs font-bold mt-1 ml-1">{errors.plateNumber.message}</p>}
               </div>
 
               <div className="grid grid-cols-2 gap-6">
@@ -98,7 +108,6 @@ export default function CreateVehicleModal({ isOpen, onClose }: CreateVehicleMod
                     {...register('make')}
                     className="input-field w-full" 
                     placeholder="Toyota"
-                    data-testid="vehicle-make"
                   />
                   {errors.make && <p className="text-red-400 text-xs font-bold mt-1 ml-1">{errors.make.message}</p>}
                 </div>
@@ -108,7 +117,6 @@ export default function CreateVehicleModal({ isOpen, onClose }: CreateVehicleMod
                     {...register('model')}
                     className="input-field w-full" 
                     placeholder="Hiace"
-                    data-testid="vehicle-model"
                   />
                   {errors.model && <p className="text-red-400 text-xs font-bold mt-1 ml-1">{errors.model.message}</p>}
                 </div>
@@ -122,7 +130,6 @@ export default function CreateVehicleModal({ isOpen, onClose }: CreateVehicleMod
                     type="number"
                     className="input-field w-full" 
                     placeholder="2024"
-                    data-testid="vehicle-year"
                   />
                   {errors.year && <p className="text-red-400 text-xs font-bold mt-1 ml-1">{errors.year.message}</p>}
                 </div>
@@ -134,7 +141,6 @@ export default function CreateVehicleModal({ isOpen, onClose }: CreateVehicleMod
                     step="0.01"
                     className="input-field w-full" 
                     placeholder="25000.00"
-                    data-testid="vehicle-cost"
                   />
                   {errors.purchaseCost && <p className="text-red-400 text-xs font-bold mt-1 ml-1">{errors.purchaseCost.message}</p>}
                 </div>
@@ -148,7 +154,6 @@ export default function CreateVehicleModal({ isOpen, onClose }: CreateVehicleMod
                     <select 
                       {...register('type')}
                       className="input-field w-full pl-12 appearance-none cursor-pointer"
-                      data-testid="vehicle-type"
                     >
                       <option value="" className="bg-surface">Select Classification</option>
                       <option value="VAN" className="bg-surface">Van</option>
@@ -167,7 +172,6 @@ export default function CreateVehicleModal({ isOpen, onClose }: CreateVehicleMod
                       {...register('imageUrl')}
                       className="input-field w-full pl-12" 
                       placeholder="https://..."
-                      data-testid="vehicle-image"
                     />
                   </div>
                   {errors.imageUrl && <p className="text-red-400 text-xs font-bold mt-1 ml-1">{errors.imageUrl.message}</p>}
@@ -179,7 +183,6 @@ export default function CreateVehicleModal({ isOpen, onClose }: CreateVehicleMod
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-3 text-red-400 text-xs font-bold"
-                  data-testid="vehicle-mutation-error"
                 >
                   <ShieldCheckIcon className="w-5 h-5 flex-shrink-0" />
                   Asset conflict. The plate number is already registered in the registry.
@@ -191,15 +194,14 @@ export default function CreateVehicleModal({ isOpen, onClose }: CreateVehicleMod
                   type="submit" 
                   className="btn-primary w-full py-4 text-lg"
                   disabled={mutation.isPending}
-                  data-testid="vehicle-submit"
                 >
                   {mutation.isPending ? (
                     <div className="flex items-center gap-2">
                       <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                      Processing Registry...
+                      Updating Registry...
                     </div>
                   ) : (
-                    'Finalize Registration'
+                    'Update Registration'
                   )}
                 </button>
               </div>

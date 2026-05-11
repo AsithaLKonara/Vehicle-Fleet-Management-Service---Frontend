@@ -54,7 +54,10 @@ export default function CreateAssignmentModal({ isOpen, onClose }: CreateAssignm
   });
 
   const onSubmit = (data: AssignmentFormData) => {
-    mutation.mutate(data);
+    console.log('🚀 Submitting Assignment:', data);
+    mutation.mutate(data, {
+      onError: (err) => console.error('❌ Assignment Error:', err)
+    });
   };
 
   return (
@@ -94,6 +97,7 @@ export default function CreateAssignmentModal({ isOpen, onClose }: CreateAssignm
                     {...register('vehicleId')}
                     className="input-field w-full pl-12 appearance-none cursor-pointer"
                     disabled={isLoadingVehicles}
+                    data-testid="assignment-vehicle-select"
                   >
                     <option value="">{isLoadingVehicles ? 'Scanning registry...' : 'Select available vehicle'}</option>
                     {availableVehicles?.map(v => (
@@ -114,6 +118,7 @@ export default function CreateAssignmentModal({ isOpen, onClose }: CreateAssignm
                     {...register('driverId')}
                     className="input-field w-full pl-12 appearance-none cursor-pointer"
                     disabled={isLoadingUsers}
+                    data-testid="assignment-driver-select"
                   >
                     <option value="">{isLoadingUsers ? 'Retrieving workforce...' : 'Select authorized driver'}</option>
                     {drivers.map(d => (
@@ -142,6 +147,7 @@ export default function CreateAssignmentModal({ isOpen, onClose }: CreateAssignm
                   type="submit" 
                   className="btn-primary w-full py-4 text-lg"
                   disabled={mutation.isPending}
+                  data-testid="assignment-submit"
                 >
                   {mutation.isPending ? (
                     <div className="flex items-center gap-2">

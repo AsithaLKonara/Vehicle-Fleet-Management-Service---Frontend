@@ -95,6 +95,7 @@ export default function AssignmentTable({ assignments, onReturn, isProcessing }:
                 onClick={() => onReturn(assignment.id)}
                 disabled={isProcessing}
                 className="btn-primary py-3 px-6 whitespace-nowrap shadow-none border border-primary/20 hover:shadow-primary/30"
+                data-testid={`return-button-${assignment.id}`}
               >
                 Mark Returned
               </button>

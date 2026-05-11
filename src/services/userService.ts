@@ -16,3 +16,12 @@ export const createUser = async (data: Omit<User, 'id'> & { password: string }):
   const response = await apiClient.post('/users', data);
   return response.data.data;
 };
+
+export const updateUser = async (id: string, data: Partial<User>): Promise<User> => {
+  const response = await apiClient.patch(`/users/${id}`, data);
+  return response.data.data;
+};
+
+export const deleteUser = async (id: string): Promise<void> => {
+  await apiClient.delete(`/users/${id}`);
+};

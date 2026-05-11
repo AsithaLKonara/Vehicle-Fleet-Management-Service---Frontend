@@ -1,31 +1,44 @@
 import { test, expect } from '@playwright/test';
+import { resetDatabase } from './setup';
 
 test.describe('Assignment Lifecycle', () => {
+  test.beforeAll(async () => {
+    await resetDatabase();
+  });
+
   test.beforeEach(async ({ page }) => {
     await page.goto('/login');
-    await page.fill('input[type="email"]', 'admin@fleet.com');
-    await page.fill('input[type="password"]', 'admin123');
-    await page.click('button[type="submit"]');
+    await page.fill('[data-testid="login-email"]', 'admin@fleet.com');
+    await page.fill('[data-testid="login-password"]', 'admin123');
+    await page.click('[data-testid="login-submit"]');
     await expect(page).toHaveURL('/dashboard');
   });
 
   test('should dispatch and return a vehicle', async ({ page }) => {
     await page.goto('/assignments');
+    
+    // Check if there's an available vehicle (seeded vehicles)
     await page.click('button:has-text("Dispatch Vehicle")');
     
-    // Select first available vehicle and staff
-    await page.selectOption('select[name="vehicleId"]', { index: 1 });
-    await page.selectOption('select[name="driverId"]', { index: 1 });
+    // Fill assignment form
+    // Wait for options to load
+    await expect(page.locator('[data-testid="assignment-vehicle-select"] option')).toHaveCount(3); // Placeholder + 2 vehicles
     
-    await page.click('button:has-text("Confirm Dispatch")');
+    await page.selectOption('[data-testid="assignment-vehicle-select"]', 'c0a80101-0000-0000-0000-000000000001');
+    // We don't know the exact UUID of the driver as it's generated, so we'll use index or label for driver
+    await page.selectOption('[data-testid="assignment-driver-select"]', { label: 'Fleet Staff' });
     
-    // Check if it appears in the list as "In Transit"
-    await expect(page.locator('text=In Transit').first()).toBeVisible();
+    await page.click('[data-testid="assignment-submit"]');
     
-    // Perform return
-    await page.click('button:has-text("Mark Returned")');
+    // Wait for modal to close
+    await expect(page.getByText('New Dispatch')).not.toBeVisible({ timeout: 10000 });
     
-    // Verify it marked as "Completed"
-    await expect(page.locator('text=Completed').first()).toBeVisible();
+    // Wait for success toast/message or status to update
+    await expect(page.locator('span:has-text("In Transit")').first()).toBeVisible({ timeout: 10000 });
+    
+    // Test return
+    // The ID of the assignment we just created is not easily available, so we'll look for the first return button
+    await page.click('[data-testid^="return-button-"]');
+    await expect(page.locator('span:has-text("Completed")').first()).toBeVisible({ timeout: 10000 });
   });
 });

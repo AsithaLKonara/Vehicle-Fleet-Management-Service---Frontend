@@ -16,6 +16,8 @@ import {
 } from 'recharts';
 import { useQuery } from '@tanstack/react-query';
 import { getStats } from '@/services/dashboardService';
+import apiClient from '@/lib/apiClient';
+import Link from 'next/link';
 import { 
   UsersIcon, 
   TruckIcon, 
@@ -39,16 +41,7 @@ export default function DashboardPage() {
     queryFn: getStats,
   });
 
-  // Mock data for trends (since backend doesn't provide history yet)
-  const trendData = [
-    { name: 'Mon', value: 40 },
-    { name: 'Tue', value: 30 },
-    { name: 'Wed', value: 65 },
-    { name: 'Thu', value: 45 },
-    { name: 'Fri', value: 80 },
-    { name: 'Sat', value: 55 },
-    { name: 'Sun', value: 90 },
-  ];
+  const trendData = stats?.utilizationTrends || [];
 
   if (isLoading) {
     return (
@@ -84,6 +77,24 @@ export default function DashboardPage() {
     { label: 'Active Tasks', value: stats?.activeAssignments || 0, icon: ClipboardDocumentCheckIcon, trend: '+18%', color: 'indigo' },
   ];
 
+  const handleExport = async (type: 'vehicles' | 'assignments' | 'audit') => {
+    try {
+      const response = await apiClient.get(`/reports/${type}/export`, {
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${type}-report-${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      console.error('Export failed:', err);
+      // In a real app, I'd show a toast here
+    }
+  };
+
   return (
     <div className="p-4 md:p-12 max-w-7xl mx-auto space-y-12">
       {/* Header */}
@@ -97,12 +108,19 @@ export default function DashboardPage() {
           <p className="text-text-dim text-lg">Real-time intelligence for your fleet and workforce.</p>
         </div>
         <div className="flex gap-4">
-          <button className="glass-light hover:bg-white/10 py-3 px-6 rounded-2xl text-white font-medium transition-all flex items-center gap-2">
-            Export Report
-          </button>
-          <button className="btn-primary">
+          <div className="relative group">
+            <button className="glass-light hover:bg-white/10 py-3 px-6 rounded-2xl text-white font-medium transition-all flex items-center gap-2">
+              Export Report
+            </button>
+            <div className="absolute right-0 top-full mt-2 w-48 glass p-2 rounded-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+              <button onClick={() => handleExport('vehicles')} className="w-full text-left px-4 py-2 hover:bg-white/5 rounded-xl text-sm text-white">Fleet Inventory (CSV)</button>
+              <button onClick={() => handleExport('assignments')} className="w-full text-left px-4 py-2 hover:bg-white/5 rounded-xl text-sm text-white">Dispatch History (CSV)</button>
+              <button onClick={() => handleExport('audit')} className="w-full text-left px-4 py-2 hover:bg-white/5 rounded-xl text-sm text-white">System Audit (CSV)</button>
+            </div>
+          </div>
+          <Link href="/assignments" className="btn-primary">
             New Assignment
-          </button>
+          </Link>
         </div>
       </motion.div>
 
@@ -231,23 +249,6 @@ export default function DashboardPage() {
         </motion.div>
       </div>
 
-      {/* Quick Actions Panel */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        className="glass p-10 rounded-[2.5rem] bg-linear-to-r from-surface to-surface-lighter flex flex-col md:flex-row items-center justify-between gap-8 border border-white/10"
-      >
-        <div className="flex items-center gap-6">
-          <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center shadow-2xl shadow-primary/40">
-            <BoltIcon className="w-8 h-8 text-white" />
-          </div>
-          <div>
-            <h4 className="text-2xl font-bold text-white">Optimization Engine</h4>
-            <p className="text-text-dim max-w-sm mt-1 font-medium">Your fleet is operating at 85% efficiency. We identified 3 routes that can be optimized today.</p>
-          </div>
-        </div>
-        <button className="btn-primary whitespace-nowrap px-10">Run Optimization</button>
-      </motion.div>
     </div>
   );
 }

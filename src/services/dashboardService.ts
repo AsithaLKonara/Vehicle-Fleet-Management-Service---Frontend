@@ -8,6 +8,11 @@ export interface DashboardStats {
     status: string;
     count: number;
   }[];
+  utilizationTrends: {
+    name: string;
+    value: number;
+    date: string;
+  }[];
 }
 
 export const getStats = async (): Promise<DashboardStats> => {
